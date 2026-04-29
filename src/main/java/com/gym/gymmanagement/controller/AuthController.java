@@ -1,4 +1,4 @@
-package com.gym.gymmanagement.authcontroller;
+package com.gym.gymmanagement.controller;
 
 import com.gym.gymmanagement.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     private static final String ADMIN_EMAIL = "mani123@gmail.com";
