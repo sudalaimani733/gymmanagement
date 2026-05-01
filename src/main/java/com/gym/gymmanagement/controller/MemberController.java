@@ -2,9 +2,11 @@ package com.gym.gymmanagement.controller;
 
 import com.gym.gymmanagement.entity.Member;
 import com.gym.gymmanagement.service.MemberService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/members")
@@ -38,8 +40,12 @@ public class MemberController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteMember(@PathVariable Long id) {
-        service.deleteMember(id);
-        return "Deleted Successfully";
+    public ResponseEntity<?> deleteMember(@PathVariable Long id) {
+        try {
+            service.deleteMember(id);
+            return ResponseEntity.ok(Map.of("message", "Deleted Successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
     }
 }

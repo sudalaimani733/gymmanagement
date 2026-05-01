@@ -83,5 +83,11 @@ public class MemberService {
         return null;
     }
 
-    public void deleteMember(Long id) { repo.deleteById(id); }
+    public void deleteMember(Long id) {
+        // Delete all payments for this member first
+        List<Payment> memberPayments = paymentRepo.findByMemberId(id);
+        paymentRepo.deleteAll(memberPayments);
+        // Then delete the member
+        repo.deleteById(id);
+    }
 }

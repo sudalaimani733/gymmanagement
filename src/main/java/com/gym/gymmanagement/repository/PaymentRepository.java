@@ -38,4 +38,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             @Param("month") int month,
             @Param("year") int year
     );
+
+    @Query("SELECT p FROM Payment p WHERE p.member.id = :memberId")
+    List<Payment> findByMemberId(@Param("memberId") Long memberId);
 }
