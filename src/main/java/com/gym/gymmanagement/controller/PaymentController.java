@@ -28,7 +28,7 @@ public class PaymentController {
         return service.addPayment(memberId, payment);
     }
 
-    // ✅ MARK PENDING → PAID
+    // MARK PENDING → PAID
     @PutMapping("/{id}/mark-paid")
     public ResponseEntity<?> markAsPaid(@PathVariable Long id) {
         Payment updated = service.markAsPaid(id);
@@ -36,7 +36,7 @@ public class PaymentController {
         return ResponseEntity.ok(updated);
     }
 
-    // ✅ AUTO-GENERATE MONTHLY PENDING RECORDS
+    // AUTO-GENERATE MONTHLY PENDING RECORDS
     @PostMapping("/generate-monthly")
     public ResponseEntity<?> generateMonthly(@RequestBody(required = false) Map<String, Integer> body) {
         int month, year;
@@ -57,7 +57,7 @@ public class PaymentController {
         ));
     }
 
-    // ✅ GET PAYMENTS BY MONTH/YEAR
+    // GET PAYMENTS BY MONTH/YEAR
     @GetMapping("/month/{year}/{month}")
     public List<Payment> getByMonth(@PathVariable int year, @PathVariable int month) {
         return service.getPaymentsByMonth(year, month);

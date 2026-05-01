@@ -19,7 +19,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("SELECT p FROM Payment p WHERE LOWER(p.status) = LOWER(:status)")
     List<Payment> findByStatus(@Param("status") String status);
 
-    // ✅ NEW: Check if a PENDING payment already exists for member in a given month/year
+    // Check if a PENDING payment already exists for member in a given month/year
     @Query("SELECT p FROM Payment p WHERE p.member.id = :memberId AND MONTH(p.paymentDate) = :month AND YEAR(p.paymentDate) = :year AND p.status = 'PENDING'")
     Optional<Payment> findPendingByMemberAndMonth(
             @Param("memberId") Long memberId,
@@ -27,11 +27,11 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             @Param("year") int year
     );
 
-    // ✅ NEW: Get all payments for a specific month/year
+    // Get all payments for a specific month/year
     @Query("SELECT p FROM Payment p WHERE MONTH(p.paymentDate) = :month AND YEAR(p.paymentDate) = :year")
     List<Payment> findByMonthAndYear(@Param("month") int month, @Param("year") int year);
 
-    // ✅ NEW: Check if ANY payment exists for member in month/year (avoid duplicates)
+    // Check if ANY payment exists for member in month/year (avoid duplicates)
     @Query("SELECT COUNT(p) > 0 FROM Payment p WHERE p.member.id = :memberId AND MONTH(p.paymentDate) = :month AND YEAR(p.paymentDate) = :year")
     boolean existsByMemberAndMonth(
             @Param("memberId") Long memberId,

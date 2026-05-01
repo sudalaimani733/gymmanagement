@@ -21,39 +21,39 @@ public class PaymentService {
         this.memberRepo = memberRepo;
     }
 
-    // ✅ ADD PAYMENT — checks for existing PENDING record first
+    // ADD PAYMENT — checks for existing PENDING record first
     public Payment addPayment(Long memberId, Payment payment) {
         Member member = memberRepo.findById(memberId).orElse(null);
         if (member == null) return null;
 
-        LocalDate now = LocalDate.now();
-        int month = now.getMonthValue();
-        int year = now.getYear();
+        //  Use provided date or fallback to now
+        LocalDate paymentDate = payment.getPaymentDate() != null
+                ? payment.getPaymentDate()
+                : LocalDate.now();
 
-        // Check if PENDING already exists for this member this month
+        int month = paymentDate.getMonthValue();
+        int year = paymentDate.getYear();
+
         Optional<Payment> existing = paymentRepo.findPendingByMemberAndMonth(memberId, month, year);
         if (existing.isPresent()) {
-            // Update the existing PENDING record instead of creating new
             Payment p = existing.get();
             p.setAmount(payment.getAmount());
             p.setStatus(payment.getStatus().toUpperCase());
             if ("PAID".equals(payment.getStatus().toUpperCase())) {
-                p.setPaymentDate(now);
-                p.setExpiryDate(now.plusDays(member.getPlan().getDuration()));
+                p.setPaymentDate(paymentDate);
+                p.setExpiryDate(paymentDate.plusDays(member.getPlan().getDuration()));
             }
             return paymentRepo.save(p);
         }
 
-        // No existing record — create new
         payment.setMember(member);
-        payment.setPaymentDate(now);
-        int duration = member.getPlan().getDuration();
-        payment.setExpiryDate(now.plusDays(duration));
+        payment.setPaymentDate(paymentDate);
+        payment.setExpiryDate(paymentDate.plusDays(member.getPlan().getDuration()));
         payment.setStatus(payment.getStatus().toUpperCase());
         return paymentRepo.save(payment);
     }
 
-    // ✅ MARK AS PAID — updates PENDING → PAID
+    // MARK AS PAID — updates PENDING → PAID
     public Payment markAsPaid(Long paymentId) {
         Payment payment = paymentRepo.findById(paymentId).orElse(null);
         if (payment == null) return null;
@@ -68,7 +68,7 @@ public class PaymentService {
         return paymentRepo.save(payment);
     }
 
-    // ✅ AUTO-GENERATE MONTHLY PENDING — one per member, skips if already exists
+    // AUTO-GENERATE MONTHLY PENDING — one per member, skips if already exists
     public int generateMonthlyPending(int month, int year) {
         List<Member> allMembers = memberRepo.findAll();
         int created = 0;
@@ -92,7 +92,7 @@ public class PaymentService {
         return created;
     }
 
-    // ✅ GET PAYMENTS BY MONTH/YEAR
+    // GET PAYMENTS BY MONTH/YEAR
     public List<Payment> getPaymentsByMonth(int year, int month) {
         return paymentRepo.findByMonthAndYear(month, year);
     }
